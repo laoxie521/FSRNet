@@ -26,9 +26,9 @@ torch.manual_seed(44)
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        prog='ST-CGAN: Stacked Conditional Generative Adversarial Networks for Jointly Learning Shadow Detection and Shadow Removal',
+        prog='FSRNet',
         usage='python3 main.py',
-        description='This module demonstrates shadow detection and removal using ST-CGAN.',
+        description='This module demonstrates shadow removal using FSRNet.',
         add_help=True)
 
     parser.add_argument('-l', '--load', type=str, default=None, help='the number of checkpoints')
@@ -204,7 +204,7 @@ def main(parser):
     '''load'''
     if parser.load is not None:
         print('load checkpoint ' + parser.load)
-        G1_weights = torch.load('./checkpoints/ST-CGAN_G1_5.20NoATTENTIONface' + parser.load + '.pth')
+        G1_weights = torch.load('./checkpoints/G1_5.20NoATTENTIONface' + parser.load + '.pth')
         GRAD_weights = torch.load('./checkpoints/TRAIN_GRID_1.6Edge_170.pth')
         Face_weights = torch.load('./checkpoints/TRAIN_GRID_1.6Face_260.pth')
 
