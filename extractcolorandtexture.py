@@ -26,9 +26,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        prog='ST-CGAN: Stacked Conditional Generative Adversarial Networks for Jointly Learning Shadow Detection and Shadow Removal',
+        prog='FSRNet',
         usage='python3 main.py',
-        description='This module demonstrates shadow detection and removal using ST-CGAN.',
+        description='This module demonstrates shadow removal using FSRNet.',
         add_help=True)
 
     parser.add_argument('-e', '--epoch', type=int, default=10000, help='Number of epochs')
