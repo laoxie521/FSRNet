@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torchvision.utils
 from torch import nn
 from inspect import isfunction
-from models.help import Block, FSABlock, ResCrossBlock,  FaceFuseBlockplus
+from models.help import Block, FSABlock, TFModule,  CFModule
 
 
 def exists(x):
@@ -187,7 +187,7 @@ class Generator(nn.Module):
             use_attn = (str(now_res) in str(attn_res))
             channel_mult = inner_channel * channel_mults[ind]
             for _ in range(0, res_blocks):
-                downs.append(ResnetBlocWithAttn(
+                downs.append(FSABlock(
                 pre_channel, channel_mult, norm_groups=norm_groups,
                 dropout=dropout, with_attn=use_attn))
                 feat_channels.append(channel_mult)
@@ -199,15 +199,15 @@ class Generator(nn.Module):
         self.downs = nn.ModuleList(downs)
 
         self.mid = nn.ModuleList([
-            ResnetBlocWithAttn(pre_channel, pre_channel, norm_groups=norm_groups,
+            FSABlock(pre_channel, pre_channel, norm_groups=norm_groups,
                            dropout=dropout, with_attn=True),
-            FaceFuseBlockplus(
+            CFModule(
                 pre_channel,
                 ffn_expansion_factor=2.66,
                 bias=False,alpha=1.0),
-            ResnetBlocWithAttn(pre_channel, pre_channel,  norm_groups=norm_groups,
+            FSABlock(pre_channel, pre_channel,  norm_groups=norm_groups,
                            dropout=dropout, with_attn=False),
-            FaceFuseBlockplus(
+            CFModule(
                 pre_channel,
                 ffn_expansion_factor=2.66,
                 bias=False,alpha=1.0)
@@ -221,13 +221,13 @@ class Generator(nn.Module):
             for a in range(0, res_blocks+2):
                 final=(a==res_blocks+1)
                 if not final:
-                    ups.append(ResnetBlocWithAttn(
+                    ups.append(FSABlock(
                         pre_channel + feat_channels.pop(), channel_mult,
                         norm_groups=norm_groups,
                         dropout=dropout, with_attn=use_attn))
                     pre_channel = channel_mult
                 else:
-                    ups.append( ResCrossBlock(pre_channel, ffn_expansion_factor=16, bias=False))
+                    ups.append( TFModule(pre_channel, ffn_expansion_factor=16, bias=False))
 
             if not is_last:
                 ups.append(Upsample(pre_channel))
@@ -254,7 +254,7 @@ class Generator(nn.Module):
             feats.append(x)
 
         for layer in self.mid:
-            if isinstance(layer, FaceFuseBlockplus):
+            if isinstance(layer, CFModule):
                 facefeaturemap = facefeaturemaps.pop()
                 x = layer(x,facefeaturemap)
             else:
@@ -263,13 +263,13 @@ class Generator(nn.Module):
             # print(x.shape)
         for layer in self.ups:
 
-            if isinstance(layer, ResnetBlocWithAttn):
+            if isinstance(layer, FSABlock):
                 # if x.shape[2]!=feat.shape[2] or x.shape[3]!=feat.shape[3]:
                 #     feat = F.interpolate(feat, x.shape[2:])
                 feat = feats.pop()
                 x = layer(torch.cat((x, feat), dim=1))
 
-            elif isinstance(layer,ResCrossBlock):
+            elif isinstance(layer,TFModule):
                 featuremap = featuremaps.pop()
                 x = layer(x, featuremap)
             else:
