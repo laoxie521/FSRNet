@@ -6,7 +6,7 @@ from PIL.Image import Image
 from torch.optim.lr_scheduler import LambdaLR
 
 from models.facecolor_unet import Face_UNet
-from models.textureGAN import Edge_UNet
+from models.edge_unet import Edge_UNet
 from train_grad import computeGradient
 from utils.data_loader import make_datapath_list, ImageDataset, ImageTransform
 from models.FSRNet import Generator, Discriminator, GradientLossBlock
