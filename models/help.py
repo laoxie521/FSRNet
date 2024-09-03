@@ -274,7 +274,7 @@ class FSABlock(nn.Module):
             x = self.attn(x)
         return x
 
-class ResCrossBlock(nn.Module):
+class TFModule(nn.Module):
     def __init__(self, pre_channel, ffn_expansion_factor, bias):
         super( ResCrossBlock, self).__init__()
 
@@ -391,7 +391,7 @@ def adain(content_features, style_features):
     normalized_features = style_std * (content_features - content_mean) / content_std + style_mean
     return normalized_features
 
-class FaceFuseBlockplus(nn.Module):
+class CFModule(nn.Module):
     def __init__(self, pre_channel, ffn_expansion_factor, bias,alpha=1.0):
         super(FaceFuseBlockplus, self).__init__()
 
