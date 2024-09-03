@@ -259,7 +259,7 @@ class TransformerBlock(nn.Module):
         x = x + self.ffn(self.norm2(x))
 
         return x
-class ResnetBlocWithAttn(nn.Module):
+class FSABlock(nn.Module):
     def __init__(self, dim, dim_out, *, norm_groups=32, dropout=0, with_attn=False):
         super().__init__()
         self.with_attn = with_attn
