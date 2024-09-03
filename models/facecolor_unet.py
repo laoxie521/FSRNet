@@ -5,7 +5,7 @@ import torch
 
 from torch import nn
 from inspect import isfunction
-from models.help import Block, ResnetBlocWithAttn, EdgeBlock
+from models.help import Block, FSABlock, EdgeBlock
 
 def exists(x):
     return x is not None
