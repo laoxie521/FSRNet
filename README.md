@@ -9,7 +9,7 @@ frequency-aware shadow removal network
 
 ### 2. Overview of our FSRNet. 
 
-![image](./fig/FSRNet.png)
+![image](./fig/FSRNET.png)
 
 ### 8. Visual Comparison with complex scenes.
 
