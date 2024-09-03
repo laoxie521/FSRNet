@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torchvision.utils
 from torch import nn
 from inspect import isfunction
-from models.help import Block, ResnetBlocWithAttn, EdgeBlock, FaceFuseBlockplus
+from models.help import Block, FSABlock, EdgeBlock, FaceFuseBlockplus
 
 
 def exists(x):
