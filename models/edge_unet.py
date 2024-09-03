@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torchvision.utils
 from torch import nn
 from inspect import isfunction
-from models.help import Block, FSABlock, EdgeBlock, FaceFuseBlockplus
+from models.help import Block, FSABlock
 
 
 def exists(x):
@@ -156,7 +156,7 @@ class Edge_UNet(nn.Module):
             use_attn = (str(now_res) in str(attn_res))
             channel_mult = inner_channel * channel_mults[ind]
             for _ in range(0, res_blocks):
-                downs.append(ResnetBlocWithAttn(
+                downs.append(FSABlock(
                 pre_channel, channel_mult,  norm_groups=norm_groups,
                 dropout=dropout, with_attn=use_attn))
                 feat_channels.append(channel_mult)
@@ -168,10 +168,10 @@ class Edge_UNet(nn.Module):
         self.downs = nn.ModuleList(downs)
 
         self.mid = nn.ModuleList([
-            ResnetBlocWithAttn(pre_channel, pre_channel, norm_groups=norm_groups,
+            FSABlock(pre_channel, pre_channel, norm_groups=norm_groups,
                            dropout=dropout, with_attn=True),
 
-            ResnetBlocWithAttn(pre_channel, pre_channel,  norm_groups=norm_groups,
+            FSABlock(pre_channel, pre_channel,  norm_groups=norm_groups,
                            dropout=dropout, with_attn=False),
 
         ])
@@ -182,7 +182,7 @@ class Edge_UNet(nn.Module):
             use_attn = (str(now_res) in str(attn_res))
             channel_mult = inner_channel * channel_mults[ind]
             for _ in range(0, res_blocks + 1):
-                ups.append(ResnetBlocWithAttn(
+                ups.append(FSABlock(
                     pre_channel + feat_channels.pop(), channel_mult,
                     norm_groups=norm_groups,
                     dropout=dropout, with_attn=use_attn))
@@ -194,7 +194,7 @@ class Edge_UNet(nn.Module):
         self.ups = nn.ModuleList(ups)
 
         self.final_conv = Block(pre_channel, default(out_channel, in_channel), groups=norm_groups)
-        # self.edge_conv = EdgeBlock(pre_channel, 1, groups=norm_groups)
+       
 
     def forward(self, x):
         # if self.grad== "grad":
@@ -208,14 +208,14 @@ class Edge_UNet(nn.Module):
         for layer in self.downs:
             x = layer(x)
             feats.append(x)
-            if isinstance(layer, ResnetBlocWithAttn):
+            if isinstance(layer, FSABlock):
                 edgefeats.append(x)
 
         for layer in self.mid:
                 x = layer(x)
 
         for layer in self.ups:
-            if isinstance(layer, ResnetBlocWithAttn):
+            if isinstance(layer, FSABlock):
                 feat = feats.pop()
                 # if x.shape[2]!=feat.shape[2] or x.shape[3]!=feat.shape[3]:
                 #     feat = F.interpolate(feat, x.shape[2:])
