@@ -151,7 +151,7 @@ def evaluate(Face,Edge, dataset, device, filename):
     save_image(grid_detect, filename+'_grid_detect12.08.jpg')
     save_image(face_detect, filename+'_edge_detect12.08.jpg')
 
-def train_gridmodel(Face,Edge, dataloader, val_dataset, num_epochs, parser, save_model_name='model'):
+def train_model(Face,Edge, dataloader, val_dataset, num_epochs, parser, save_model_name='model'):
     check_dir()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
@@ -265,7 +265,7 @@ def main(parser):
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True) #num_workers=4
 
-    G1_update, G2_update, D1_update, D2_update = train_gridmodel(Face,Edge,dataloader=train_dataloader,
+    G1_update, G2_update, D1_update, D2_update = train_model(Face,Edge,dataloader=train_dataloader,
                                                             val_dataset=val_dataset, num_epochs=num_epochs,
                                                             parser=parser, save_model_name='TRAIN_GRID')
 
